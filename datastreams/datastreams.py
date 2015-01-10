@@ -70,7 +70,7 @@ class DataStream(object):
             {'_id': 0, 'type': 0, 'stream_key': 0})
         )
     
-    def add(self, data):
+    def add_entry(self, data):
         entry = dict()
         entry['type'] = DatabaseDocumentTypes.Entry
         entry['stream_key'] = self.key

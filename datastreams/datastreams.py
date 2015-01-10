@@ -1,4 +1,3 @@
-import json
 import os
 import datetime
 from pymongo import MongoClient
@@ -10,23 +9,23 @@ class DatabaseDocumentTypes:
     Stream, Entry = range(1, 3)
 
 class DataStreamsClient(object):
-    def __init__(self, database_name=None, collection_name=None):
+    def __init__(self, database=None, collection=None):
         # Check if running locally on on Heroku and setup MongoDB accordingly
         if 'MONGOLAB_URI' in os.environ:
             client = MongoClient(os.environ['MONGOLAB_URI'])
         else:
             client = MongoClient('mongodb://localhost:27017/')
 
-        if database_name:
-            db = getattr(client, database_name)
+        if database:
+            db = getattr(client, str(database))
         else:
             try:
                 db = client.get_default_database()
             except:
                 db = client.data_streams
 
-        if collection_name:
-            self.collection = getattr(db, collection_name)
+        if collection:
+            self.collection = getattr(db, str(collection))
         else:
             self.collection = db.data
 
@@ -48,11 +47,7 @@ class DataStreamsClient(object):
         stream['stream_key'] = str(stream_key)
 
         if fields:
-            try:
-                stream['fields'] = json.loads(fields)
-            except:
-                # put a better error here, including error response code
-                return 'fields are not valid json'
+            stream['fields'] = fields
 
         self.collection.insert(stream)
         return self.get_data_stream(stream_key)
@@ -77,10 +72,6 @@ class DataStream(object):
         entry['timestamp'] = datetime.datetime.now().isoformat()
 
         if data:
-            try:
-                entry['data'] = json.loads(data)
-            except:
-                # put a better error here, including error response code
-                return 'data is not valid json'
+            entry['data'] = data
 
         return str(self.collection.insert(entry))

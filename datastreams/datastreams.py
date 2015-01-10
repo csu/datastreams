@@ -10,15 +10,24 @@ class DatabaseDocumentTypes:
     Stream, Entry = range(1, 3)
 
 class DataStreamsClient(object):
-    def __init__(self, collection_name):
+    def __init__(self, database_name=None, collection_name=None):
         # Check if running locally on on Heroku and setup MongoDB accordingly
         if 'MONGOLAB_URI' in os.environ:
             client = MongoClient(os.environ['MONGOLAB_URI'])
-            db = client.get_default_database()
-            self.collection = db.data
         else:
             client = MongoClient('mongodb://localhost:27017/')
-            db = getattr(client, collection_name)
+
+        if database_name:
+            db = getattr(client, database_name)
+        else:
+            try:
+                db = client.get_default_database()
+            except:
+                db = client.data_streams
+
+        if collection_name:
+            self.collection = getattr(db, collection_name)
+        else:
             self.collection = db.data
 
     def get_data_stream(self, stream_key):
@@ -61,7 +70,7 @@ class DataStream(object):
             {'_id': 0, 'type': 0, 'stream_key': 0})
         )
     
-    def add_entry(self, data):
+    def add(self, data):
         entry = dict()
         entry['type'] = DatabaseDocumentTypes.Entry
         entry['stream_key'] = self.key

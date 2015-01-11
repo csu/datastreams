@@ -1,8 +1,6 @@
 import os
 import datetime
 from pymongo import MongoClient
-from bson.json_util import dumps as bson_dump
-
 
 # Enumerated Types
 class DatabaseDocumentTypes:
@@ -60,10 +58,7 @@ class DataStream(object):
 
     @property
     def entries(self):
-        return bson_dump(self.collection.find(
-            {'stream_key': self.key, 'type': DatabaseDocumentTypes.Entry},
-            {'_id': 0, 'type': 0, 'stream_key': 0})
-        )
+        return self.collection.find({'stream_key': self.key, 'type': DatabaseDocumentTypes.Entry}, {'_id': 0, 'type': 0, 'stream_key': 0})
     
     def add_entry(self, data):
         entry = dict()

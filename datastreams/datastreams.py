@@ -27,6 +27,9 @@ class DataStreamsClient(object):
         else:
             self.collection = db.data
 
+    def get_data_streams(self):
+        return list(self.collection.find({'type': DatabaseDocumentTypes.Stream}, {'_id': 0, 'type': 0}))
+
     def get_data_stream(self, stream_key):
         result = self.collection.find_one({'type': DatabaseDocumentTypes.Stream, 'stream_key': stream_key}, {'_id': 0, 'type': 0})
 

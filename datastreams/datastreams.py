@@ -58,7 +58,10 @@ class DataStream(object):
 
     @property
     def entries(self):
-        return self.collection.find({'stream_key': self.key, 'type': DatabaseDocumentTypes.Entry}, {'_id': 0, 'type': 0, 'stream_key': 0})
+        return self.collection.find(
+            {'stream_key': self.key, 'type': DatabaseDocumentTypes.Entry},
+            {'_id': 0, 'type': 0, 'stream_key': 0}
+        ).toArray()
     
     def add_entry(self, data):
         entry = dict()

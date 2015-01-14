@@ -6,6 +6,9 @@ from pymongo import MongoClient
 class DatabaseDocumentTypes:
     Stream, Entry = range(1, 3)
 
+DEFAULT_DATABASE = 'data_streams'
+DEFAULT_COLLECTION = 'data'
+
 class DataStreamsClient(object):
     def __init__(self, database=None, collection=None):
         # Check if running locally on on Heroku and setup MongoDB accordingly
@@ -20,12 +23,12 @@ class DataStreamsClient(object):
             try:
                 db = client.get_default_database()
             except:
-                db = client.data_streams
+                db = getattr(db, DEFAULT_DATABASE)
 
         if collection:
             self.collection = getattr(db, str(collection))
         else:
-            self.collection = db.data
+            self.collection = getattr(db, DEFAULT_COLLECTION)
 
     def get_data_streams(self):
         return list(self.collection.find({'type': DatabaseDocumentTypes.Stream}, {'_id': 0, 'type': 0}))

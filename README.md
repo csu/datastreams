@@ -16,4 +16,7 @@ stream.add_entry({'wow': 'such data'})
 
 # Get entries from stream
 stream.entries
+
+# Limit the number of entries returned
+stream.get_entries(limit=10)
 ```
